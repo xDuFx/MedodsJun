@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"testjun/pkg/service"
 
@@ -19,7 +18,6 @@ func (api *api) auth(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		_, res, _ := api.db.Find(lg)
-		fmt.Println(res, lg)
 		if !res {
 			token, err := service.CreateToken(lg)
 			if err != nil {
@@ -63,7 +61,6 @@ func (api *api) auth(w http.ResponseWriter, r *http.Request) {
 
 func (api *api) refrUs(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
-		fmt.Println("1**************************")
 		vars := mux.Vars(r)
 		lg, ok := vars["guid"]
 		if !ok {
@@ -75,13 +72,11 @@ func (api *api) refrUs(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "No parameter token", http.StatusInternalServerError)
 			return
 		}
-		fmt.Println("2************************")
 		_, res, _ := api.db.Find(lg)
 		if !res {
 			http.Error(w, "incorrect user", http.StatusInternalServerError)
 			return
 		}
-		fmt.Println("3************************")
 		to, err := base64.StdEncoding.DecodeString(tk)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -92,7 +87,6 @@ func (api *api) refrUs(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		fmt.Println(guid.Subject, lg)
 		check := service.CheckTokenHash(lg, guid.Subject)
 		if !check {
 			http.Error(w, "incorrect token", http.StatusInternalServerError)
